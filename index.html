@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MediCore — Hospital Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="style.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- BACKGROUND -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════ AUTH ═══════════════════════ -->
+<div id="auth">
+
+  <!-- LOGIN -->
+  <div id="pg-login" style="display:contents">
+    <div class="auth-panel auth-visual">
+      <div class="visual-content">
+        <div class="visual-logo">🏥</div>
+        <div class="visual-title">Smart<br/><span>Healthcare</span><br/>Management</div>
+        <div class="visual-desc">A complete digital system for managing patients, doctors, appointments and billing — all in one place.</div>
+        <div class="visual-pills">
+          <span class="vpill">📋 Patient Records</span>
+          <span class="vpill">👨‍⚕️ Doctor Management</span>
+          <span class="vpill">📅 Appointments</span>
+          <span class="vpill">🧾 Billing & Invoices</span>
+          <span class="vpill">📊 Analytics</span>
+        </div>
+      </div>
+    </div>
+    <div class="auth-panel auth-form-panel">
+      <div class="auth-form-wrap">
+        <div class="form-logo">
+          <div class="form-logo-mark">M</div>
+          <div class="form-logo-text">MediCore HMS</div>
+        </div>
+        <div class="form-heading">Sign In</div>
+        <div class="form-subheading">Enter your credentials to access the system</div>
+
+        <div class="field" id="lf-em">
+          <label class="field-label">Email Address</label>
+          <div class="field-body">
+            <span class="field-ico">✉️</span>
+            <input type="email" id="l-em" placeholder="your@hospital.com" onkeydown="if(event.key==='Enter')login()"/>
+          </div>
+          <div class="field-err">⚠ Please enter a valid email</div>
+        </div>
+
+        <div class="field" id="lf-pw">
+          <label class="field-label">Password</label>
+          <div class="field-body">
+            <span class="field-ico">🔒</span>
+            <input type="password" id="l-pw" placeholder="Your password" onkeydown="if(event.key==='Enter')login()"/>
+            <button class="field-ico-right" onclick="togglePw('l-pw',this)" type="button">👁</button>
+          </div>
+          <div class="field-err">⚠ Password is required</div>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;margin:-8px 0 20px">
+          <a style="font-size:12px;color:var(--text-dim);cursor:pointer" onclick="showToast('Password reset link sent!','ok')">Forgot password?</a>
+        </div>
+
+        <button class="btn btn-primary btn-full" onclick="login()">Sign In →</button>
+
+        <div class="form-footer" style="margin-top:28px">
+          New to MediCore? <a onclick="switchAuth('pg-register')">Create an account →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REGISTER -->
+  <div id="pg-register" style="display:none;contents">
+    <div class="auth-panel auth-visual">
+      <div class="visual-content">
+        <div class="visual-logo">🏥</div>
+        <div class="visual-title">Join<br/><span>MediCore</span><br/>Today</div>
+        <div class="visual-desc">Create your account and start managing your hospital operations with efficiency and precision.</div>
+        <div class="visual-stats">
+          <div class="vstat"><div class="vstat-num">∞</div><div class="vstat-lbl">Patient Records</div></div>
+          <div class="vstat"><div class="vstat-num">24/7</div><div class="vstat-lbl">Access</div></div>
+          <div class="vstat"><div class="vstat-num">100%</div><div class="vstat-lbl">Secure</div></div>
+          <div class="vstat"><div class="vstat-num">Free</div><div class="vstat-lbl">To Start</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-panel auth-form-panel" style="overflow-y:auto">
+      <div class="auth-form-wrap">
+        <div class="form-logo">
+          <div class="form-logo-mark">M</div>
+          <div class="form-logo-text">MediCore HMS</div>
+        </div>
+        <div class="form-heading">Create Account</div>
+        <div class="form-subheading">Set up your hospital management profile</div>
+
+        <!-- ROLE -->
+        <label class="field-label" style="display:block;margin-bottom:8px">Your Role</label>
+        <div class="role-grid">
+          <div class="role-card active" data-role="Admin" onclick="pickRole(this)">
+            <span class="r-ico">🛡️</span>
+            <span class="r-lbl">Admin</span>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field" id="rf-fn">
+            <label class="field-label">First Name</label>
+            <div class="field-body"><span class="field-ico">👤</span><input type="text" id="r-fn" placeholder="First name"/></div>
+            <div class="field-err">⚠ Required</div>
+          </div>
+          <div class="field" id="rf-ln">
+            <label class="field-label">Last Name</label>
+            <div class="field-body"><span class="field-ico">👤</span><input type="text" id="r-ln" placeholder="Last name"/></div>
+            <div class="field-err">⚠ Required</div>
+          </div>
+        </div>
+
+        <div class="field" id="rf-em">
+          <label class="field-label">Work Email</label>
+          <div class="field-body"><span class="field-ico">✉️</span><input type="email" id="r-em" placeholder="you@hospital.com"/></div>
+          <div class="field-err" id="rf-em-err">⚠ Enter a valid email</div>
+        </div>
+
+        <div class="field" id="rf-ph">
+          <label class="field-label">Phone Number</label>
+          <div class="field-body"><span class="field-ico">📞</span><input type="tel" id="r-ph" placeholder="10-digit mobile number"/></div>
+          <div class="field-err">⚠ Enter a valid 10-digit number</div>
+        </div>
+
+        <div class="field-row">
+          <div class="field" id="rf-pw">
+            <label class="field-label">Password</label>
+            <div class="field-body">
+              <span class="field-ico">🔒</span>
+              <input type="password" id="r-pw" placeholder="Create password" oninput="pwStrength(this.value)"/>
+              <button class="field-ico-right" onclick="togglePw('r-pw',this)" type="button">👁</button>
+            </div>
+            <div class="pw-strength"><div class="pw-seg" id="ps1"></div><div class="pw-seg" id="ps2"></div><div class="pw-seg" id="ps3"></div><div class="pw-seg" id="ps4"></div></div>
+            <div class="pw-label" id="pw-lbl" style="font-size:11px;color:var(--text-dim);margin-top:4px"></div>
+            <div class="field-err">⚠ Min 8 chars, 1 uppercase, 1 number</div>
+          </div>
+          <div class="field" id="rf-cp">
+            <label class="field-label">Confirm Password</label>
+            <div class="field-body">
+              <span class="field-ico">🔒</span>
+              <input type="password" id="r-cp" placeholder="Repeat password"/>
+              <button class="field-ico-right" onclick="togglePw('r-cp',this)" type="button">👁</button>
+            </div>
+            <div class="field-err">⚠ Passwords don't match</div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:flex-start;gap:10px;margin:8px 0 20px">
+          <input type="checkbox" id="r-terms" style="margin-top:2px;accent-color:var(--emerald);width:15px;height:15px;flex-shrink:0"/>
+          <label for="r-terms" style="font-size:13px;color:var(--text-mid);cursor:pointer;line-height:1.5">
+            I agree to the <a style="color:var(--emerald);cursor:pointer">Terms of Service</a> and <a style="color:var(--emerald);cursor:pointer">Privacy Policy</a>
+          </label>
+        </div>
+
+        <button class="btn btn-primary btn-full" onclick="register()">Create My Account →</button>
+
+        <div class="form-footer" style="margin-top:20px">
+          Already have an account? <a onclick="switchAuth('pg-login')">Sign In →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /auth -->
+
+<!-- ═══════════════════════ MODALS ═══════════════════════ -->
+
+<!-- ADD PATIENT -->
+<div class="overlay" id="m-patient">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-title">Register New Patient</div><div class="modal-subtitle">Enter the patient's complete information</div></div>
+      <button class="modal-close" onclick="closeModal('m-patient')">✕</button>
+    </div>
+    <div class="field-row">
+      <div class="field" id="mf-pnm">
+        <label class="field-label">Full Name</label>
+        <div class="field-body"><span class="field-ico">👤</span><input id="m-p-nm" placeholder="Patient full name"/></div>
+        <div class="field-err">⚠ Name is required</div>
+      </div>
+      <div class="field">
+        <label class="field-label">Age</label>
+        <div class="field-body"><span class="field-ico">🎂</span><input type="number" id="m-p-ag" placeholder="Age" min="0" max="150"/></div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">Gender</label>
+        <div class="field-body"><span class="field-ico">⚧</span><select id="m-p-gn"><option>Male</option><option>Female</option><option>Other</option></select></div>
+      </div>
+      <div class="field">
+        <label class="field-label">Blood Group</label>
+        <div class="field-body"><span class="field-ico">🩸</span><select id="m-p-bl"><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">Phone Number</label>
+        <div class="field-body"><span class="field-ico">📞</span><input id="m-p-ph" placeholder="Phone number"/></div>
+      </div>
+      <div class="field">
+        <label class="field-label">Admission Type</label>
+        <div class="field-body"><span class="field-ico">🏥</span><select id="m-p-st"><option value="Admitted">Admitted (Inpatient)</option><option value="Outpatient">Outpatient</option></select></div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Address</label>
+      <div class="field-body"><span class="field-ico">📍</span><input id="m-p-ad" placeholder="Full address"/></div>
+    </div>
+    <div class="field">
+      <label class="field-label">Diagnosis / Chief Complaint</label>
+      <textarea class="no-ico" id="m-p-dg" placeholder="Describe symptoms, diagnosis, or chief complaint..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('m-patient')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="addPatient()">🏥 Register Patient</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT PATIENT -->
+<div class="overlay" id="m-edit-p">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-title">Edit Patient Record</div></div>
+      <button class="modal-close" onclick="closeModal('m-edit-p')">✕</button>
+    </div>
+    <input type="hidden" id="ep-id"/>
+    <div class="field-row">
+      <div class="field"><label class="field-label">Full Name</label><div class="field-body"><span class="field-ico">👤</span><input id="ep-nm"/></div></div>
+      <div class="field"><label class="field-label">Age</label><div class="field-body"><span class="field-ico">🎂</span><input type="number" id="ep-ag"/></div></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label class="field-label">Phone</label><div class="field-body"><span class="field-ico">📞</span><input id="ep-ph"/></div></div>
+      <div class="field"><label class="field-label">Status</label><div class="field-body"><span class="field-ico">🏥</span><select id="ep-st"><option value="Admitted">Admitted</option><option value="Outpatient">Outpatient</option></select></div></div>
+    </div>
+    <div class="field"><label class="field-label">Address</label><div class="field-body"><span class="field-ico">📍</span><input id="ep-ad"/></div></div>
+    <div class="field"><label class="field-label">Diagnosis</label><textarea class="no-ico" id="ep-dg"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('m-edit-p')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="saveEditP()">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW PATIENT DETAIL -->
+<div class="overlay" id="m-view-p">
+  <div class="modal modal-wide">
+    <div class="modal-head">
+      <div><div class="modal-title">Patient Detail</div><div class="modal-subtitle">Profile, appointments and billing overview</div></div>
+      <button class="modal-close" onclick="closeModal('m-view-p')">✕</button>
+    </div>
+    <div id="vp-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('m-view-p')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD DOCTOR -->
+<div class="overlay" id="m-doctor">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-title">Add Doctor / Specialist</div><div class="modal-subtitle">Register a doctor profile</div></div>
+      <button class="modal-close" onclick="closeModal('m-doctor')">✕</button>
+    </div>
+    <div class="field-row">
+      <div class="field" id="mf-dnm">
+        <label class="field-label">Full Name</label>
+        <div class="field-body"><span class="field-ico">👨‍⚕️</span><input id="m-d-nm" placeholder="Dr. Full Name"/></div>
+        <div class="field-err">⚠ Name is required</div>
+      </div>
+      <div class="field">
+        <label class="field-label">Department</label>
+        <div class="field-body"><span class="field-ico">🏢</span>
+          <select id="m-d-dp">
+            <option>Cardiology</option><option>Neurology</option><option>Orthopedics</option>
+            <option>Pediatrics</option><option>Oncology</option><option>General Medicine</option>
+            <option>Dermatology</option><option>Radiology</option><option>Surgery</option>
+            <option>Gynecology</option><option>ENT</option><option>Ophthalmology</option>
+            <option>Psychiatry</option><option>Urology</option><option>Nephrology</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label class="field-label">Phone Number</label><div class="field-body"><span class="field-ico">📞</span><input id="m-d-ph" placeholder="Phone"/></div></div>
+      <div class="field"><label class="field-label">Consultation Fee (₹)</label><div class="field-body"><span class="field-ico">💰</span><input type="number" id="m-d-fe" placeholder="e.g. 800" min="0"/></div></div>
+    </div>
+    <div class="field"><label class="field-label">Availability Schedule</label><div class="field-body"><span class="field-ico">🕐</span><input id="m-d-av" placeholder="e.g. Mon–Fri 09:00–17:00"/></div></div>
+    <div class="field"><label class="field-label">Qualifications</label><div class="field-body"><span class="field-ico">🎓</span><input id="m-d-ql" placeholder="e.g. MBBS, MD Cardiology, DM"/></div></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('m-doctor')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="addDoctor()">➕ Add Doctor</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOOK APPOINTMENT -->
+<div class="overlay" id="m-appt">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-title">Book Appointment</div><div class="modal-subtitle">Schedule a patient consultation</div></div>
+      <button class="modal-close" onclick="closeModal('m-appt')">✕</button>
+    </div>
+    <div class="field"><label class="field-label">Patient</label><div class="field-body"><span class="field-ico">👤</span><select id="a-pt"></select></div></div>
+    <div class="field"><label class="field-label">Doctor</label><div class="field-body"><span class="field-ico">👨‍⚕️</span><select id="a-dr" onchange="updateFee()"></select></div></div>
+    <div class="fee-info-box" id="fee-box">💰 Select a doctor to see the consultation fee</div>
+    <div class="field-row">
+      <div class="field"><label class="field-label">Date</label><div class="field-body"><span class="field-ico">📅</span><input type="date" id="a-dt"/></div></div>
+      <div class="field"><label class="field-label">Time Slot</label><div class="field-body"><span class="field-ico">🕐</span>
+        <select id="a-tm">
+          <option>09:00</option><option>09:30</option><option>10:00</option><option>10:30</option>
+          <option>11:00</option><option>11:30</option><option>12:00</option><option>14:00</option>
+          <option>14:30</option><option>15:00</option><option>15:30</option><option>16:00</option>
+          <option>16:30</option><option>17:00</option>
+        </select>
+      </div></div>
+    </div>
+    <div class="field"><label class="field-label">Reason for Visit / Notes</label><textarea class="no-ico" id="a-nt" placeholder="Describe the reason for visit, symptoms..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('m-appt')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="bookAppt()">📅 Confirm Booking</button>
+    </div>
+  </div>
+</div>
+
+<!-- GENERATE BILL -->
+<div class="overlay" id="m-bill">
+  <div class="modal modal-wide">
+    <div class="modal-head">
+      <div><div class="modal-title">Generate Bill / Invoice</div><div class="modal-subtitle">Create an itemized bill for a patient</div></div>
+      <button class="modal-close" onclick="closeModal('m-bill')">✕</button>
+    </div>
+    <div class="field"><label class="field-label">Select Patient</label><div class="field-body"><span class="field-ico">👤</span><select id="b-pt"></select></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <label class="field-label" style="margin-bottom:0">Bill Items</label>
+      <button class="btn btn-outline btn-xs" onclick="addBillRow()">+ Add Item</button>
+    </div>
+    <div id="bill-rows"></div>
+    <div style="display:flex;justify-content:flex-end;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--rim);margin-top:8px">
+      <span style="font-size:13px;color:var(--text-mid)">Grand Total:</span>
+      <span id="bill-total" style="font-family:var(--mono);font-size:22px;font-weight:500;color:var(--emerald)">₹0.00</span>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('m-bill')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="genBill()">🧾 Generate Invoice</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW INVOICE -->
+<div class="overlay" id="m-inv">
+  <div class="modal">
+    <div class="modal-head">
+      <div><div class="modal-title">Invoice</div></div>
+      <button class="modal-close" onclick="closeModal('m-inv')">✕</button>
+    </div>
+    <div id="inv-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('m-inv')">Close</button>
+      <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT -->
+<div class="overlay" id="m-pay">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-head">
+      <div><div class="modal-title">Process Payment</div><div class="modal-subtitle" id="pay-info"></div></div>
+      <button class="modal-close" onclick="closeModal('m-pay')">✕</button>
+    </div>
+    <div class="field">
+      <label class="field-label">Payment Amount (₹)</label>
+      <div class="field-body"><span class="field-ico">💳</span><input type="number" id="pay-am" placeholder="Enter amount" min="1"/></div>
+    </div>
+    <div class="field">
+      <label class="field-label">Payment Method</label>
+      <div class="field-body"><span class="field-ico">💳</span>
+        <select id="pay-mt"><option>Cash</option><option>Credit Card</option><option>Debit Card</option><option>UPI</option><option>Net Banking</option><option>Insurance</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('m-pay')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmPay()">✓ Confirm Payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ APP ═══════════════════════ -->
+<div id="app" style="flex-direction:column">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="tb-mark">M</div>
+      <div class="tb-name">MediCore</div>
+    </div>
+    <div class="topbar-sep"></div>
+    <div class="tb-page-title" id="tb-title">Dashboard</div>
+    <div class="topbar-right">
+      <div class="tb-clock" id="clock"></div>
+      <div class="tb-user" onclick="goPage('profile',null)">
+        <div class="tb-avatar" id="tb-av">A</div>
+        <div>
+          <div class="tb-user-name" id="tb-nm">—</div>
+          <div class="tb-user-role" id="tb-rl">—</div>
+        </div>
+      </div>
+      <button class="tb-logout" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="app-body">
+    <aside class="sidebar">
+      <div class="sidebar-section">Overview</div>
+      <div class="nav-link active" onclick="goPage('dashboard',this)"><span class="nav-icon">⬡</span> Dashboard</div>
+      <div class="sidebar-section">Modules</div>
+      <div class="nav-link" onclick="goPage('patients',this)"><span class="nav-icon">🧑‍⚕️</span> Patient</div>
+      <div class="nav-link" onclick="goPage('doctors',this)"><span class="nav-icon">👨‍⚕️</span> Doctor</div>
+      <div class="nav-link" onclick="goPage('appointments',this)"><span class="nav-icon">📅</span> Appointments</div>
+      <div class="nav-link" onclick="goPage('billing',this)"><span class="nav-icon">🧾</span> Billing</div>
+      <div class="sidebar-section">Analytics</div>
+      <div class="nav-link" onclick="goPage('reports',this)"><span class="nav-icon">📊</span> Reports</div>
+      <div class="sidebar-section">Account</div>
+      <div class="nav-link" onclick="goPage('profile',this)"><span class="nav-icon">👤</span> My Profile</div>
+      <div class="sidebar-footer">
+        <div class="sb-quick">
+          <div class="sb-row"><span>Admitted</span><span class="sb-val" id="sb-adm">0</span></div>
+          <div class="sb-row"><span>Today's Appts</span><span class="sb-val" id="sb-tap">0</span></div>
+          <div class="sb-row"><span>Unpaid Bills</span><span class="sb-val" id="sb-unp">0</span></div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-glow"></div><div class="stat-ico">🧑‍⚕️</div><div class="stat-num" id="s-pt">0</div><div class="stat-lbl">Total Patients</div></div>
+          <div class="stat-card"><div class="stat-glow"></div><div class="stat-ico">👨‍⚕️</div><div class="stat-num" id="s-dr">0</div><div class="stat-lbl">Doctors</div></div>
+          <div class="stat-card"><div class="stat-glow"></div><div class="stat-ico">📅</div><div class="stat-num" id="s-ap">0</div><div class="stat-lbl">Appointments</div></div>
+          <div class="stat-card"><div class="stat-glow"></div><div class="stat-ico">💰</div><div class="stat-num" id="s-rv">₹0</div><div class="stat-lbl">Revenue</div></div>
+        </div>
+        <div class="dash-grid">
+          <div class="card">
+            <div class="card-title"><div class="card-title-bar"></div>Recent Patients</div>
+            <div class="tbl-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Blood</th><th>Status</th></tr></thead><tbody id="d-pts"></tbody></table></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><div class="card-title-bar"></div>Upcoming Appointments</div>
+            <div class="tbl-wrap"><table><thead><tr><th>Patient</th><th>Doctor</th><th>When</th></tr></thead><tbody id="d-aps"></tbody></table></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PATIENTS -->
+      <div class="page" id="page-patients">
+        <div class="page-header">
+          <div class="ph-left"><h1>Patient Management</h1><p>Register patients, view details, appointment confirmation and billing receipts</p></div>
+          <div class="ph-right">
+            <div class="search-box"><span style="opacity:.4">🔍</span><input id="srch-p" placeholder="Search name or ID…" oninput="renderPt()"/></div>
+            <button class="btn btn-primary btn-sm" onclick="openModal('m-patient')">+ Register New Patient</button>
+          </div>
+        </div>
+        <div class="stat-grid" style="margin-bottom:18px">
+          <div class="stat-card"><div class="stat-glow"></div><div class="stat-ico">🧑‍⚕️</div><div class="stat-num" id="p-tot">0</div><div class="stat-lbl">Total Patients</div></div>
+          <div class="stat-card"><div class="stat-glow"></div><div class="stat-ico">📅</div><div class="stat-num" id="p-cnf">0</div><div class="stat-lbl">Appointment Confirmed</div></div>
+          <div class="stat-card"><div class="stat-glow"></div><div class="stat-ico">🧾</div><div class="stat-num" id="p-inv">0</div><div class="stat-lbl">Invoices Generated</div></div>
+          <div class="stat-card"><div class="stat-glow"></div><div class="stat-ico">💳</div><div class="stat-num" id="p-rcp">0</div><div class="stat-lbl">Receipt Ready</div></div>
+        </div>
+        <div class="card">
+          <div class="tbl-wrap">
+            <table><thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Appointment</th><th>Invoice</th><th>Payment</th><th>Receipt</th><th>Actions</th></tr></thead>
+            <tbody id="tbl-pts"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOCTORS -->
+      <div class="page" id="page-doctors">
+        <div class="page-header">
+          <div class="ph-left"><h1>Doctors Directory</h1><p>Add and manage doctors, specialties and schedules</p></div>
+          <div class="ph-right"><button class="btn btn-primary btn-sm" onclick="openModal('m-doctor')">+ Add Doctor</button></div>
+        </div>
+        <div class="card">
+          <div class="tbl-wrap">
+            <table><thead><tr><th>ID</th><th>Name</th><th>Department</th><th>Qualifications</th><th>Availability</th><th>Fee</th><th>Actions</th></tr></thead>
+            <tbody id="tbl-drs"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- APPOINTMENTS -->
+      <div class="page" id="page-appointments">
+        <div class="page-header">
+          <div class="ph-left"><h1>Appointments</h1><p>Schedule and manage patient consultations</p></div>
+          <div class="ph-right"><button class="btn btn-primary btn-sm" onclick="openApptModal()">📅 Book Appointment</button></div>
+        </div>
+        <div class="card">
+          <div class="tbl-wrap">
+            <table><thead><tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="tbl-aps"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- BILLING -->
+      <div class="page" id="page-billing">
+        <div class="page-header">
+          <div class="ph-left"><h1>Billing & Payments</h1><p>Generate invoices and process patient payments</p></div>
+          <div class="ph-right"><button class="btn btn-primary btn-sm" onclick="openBillModal()">🧾 New Bill</button></div>
+        </div>
+        <div class="card">
+          <div class="tbl-wrap">
+            <table><thead><tr><th>Bill ID</th><th>Patient</th><th>Date</th><th>Total</th><th>Paid</th><th>Balance</th><th>Method</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="tbl-bls"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORTS -->
+      <div class="page" id="page-reports">
+        <div class="page-header">
+          <div class="ph-left"><h1>Reports & Analytics</h1><p>Hospital-wide performance and financial summary</p></div>
+          <div class="ph-right"><div class="badge" style="color:var(--emerald);border-color:rgba(0,200,150,.3);background:rgba(0,200,150,.07)">● Live Data</div></div>
+        </div>
+        <div class="report-grid">
+          <div class="card"><div class="card-title"><div class="card-title-bar"></div>Patient Statistics</div><div id="rpt-pt"></div></div>
+          <div class="card"><div class="card-title"><div class="card-title-bar"></div>Appointment Summary</div><div id="rpt-ap"></div></div>
+          <div class="card"><div class="card-title"><div class="card-title-bar"></div>Financial Overview</div><div id="rpt-fn"></div></div>
+          <div class="card"><div class="card-title"><div class="card-title-bar"></div>Departments</div><div id="rpt-dp"></div></div>
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="page" id="page-profile">
+        <div class="page-header"><div class="ph-left"><h1>My Profile</h1><p>View and update your account details</p></div></div>
+        <div class="profile-hero">
+          <div class="profile-big-av" id="prf-av">A</div>
+          <div class="profile-info">
+            <h2 id="prf-nm">—</h2>
+            <div class="p-sub" id="prf-em">—</div>
+            <div class="p-sub" id="prf-ph">—</div>
+            <div class="profile-badge" id="prf-rl">—</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><div class="card-title-bar"></div>Edit Profile</div>
+          <div class="field-row">
+            <div class="field"><label class="field-label">First Name</label><div class="field-body"><span class="field-ico">👤</span><input id="pf-fn"/></div></div>
+            <div class="field"><label class="field-label">Last Name</label><div class="field-body"><span class="field-ico">👤</span><input id="pf-ln"/></div></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label class="field-label">Email</label><div class="field-body"><span class="field-ico">✉️</span><input type="email" id="pf-em"/></div></div>
+            <div class="field"><label class="field-label">Phone</label><div class="field-body"><span class="field-ico">📞</span><input id="pf-ph"/></div></div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:4px">
+            <button class="btn btn-primary btn-sm" onclick="saveProfile()">💾 Save Changes</button>
+            <button class="btn btn-outline btn-sm" onclick="changePassword()">🔒 Change Password</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
