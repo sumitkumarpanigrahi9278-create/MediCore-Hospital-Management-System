@@ -214,6 +214,8 @@ function initApp(){
 
 /* ═══════════════════════ NAVIGATION ═══════════════════════ */
 function goPage(pg,el){
+  const sidebar = document.querySelector('.sidebar');
+  if(sidebar) sidebar.classList.remove('show-sidebar');
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));
   const pageEl=document.getElementById('page-'+pg);
@@ -635,3 +637,9 @@ tick();setInterval(tick,30000);
 
 /* Close modals on backdrop click */
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+/* Sidebar Toggle */
+function toggleSidebar(){
+  const s = document.querySelector('.sidebar');
+  if(s) s.classList.toggle('show-sidebar');
+}

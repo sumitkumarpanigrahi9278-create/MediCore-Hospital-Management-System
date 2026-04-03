@@ -582,6 +582,21 @@ body{
   z-index:50
 }
 
+.tb-menu-toggle {
+    display:none;
+    cursor:pointer;
+    font-size:20px;
+    color:var(--text);
+    padding:4px;
+    line-height:1;
+    border-radius:6px;
+    transition:background 0.15s;
+    user-select:none;
+}
+.tb-menu-toggle:hover {
+    background:rgba(255,255,255,0.05);
+}
+
 .topbar-brand{
     display:flex;
     align-items:center;
@@ -1437,24 +1452,141 @@ tbody tr:hover td{
   gap:8px
 }
 
+@media(max-width:1024px){
+    .dash-grid{
+        grid-template-columns:1fr
+    }
+}
+
 @media(max-width:960px){
     .stat-grid{
         grid-template-columns:1fr 1fr
     }
-    .dash-grid,.report-grid
-    {
+    .report-grid{
         grid-template-columns:1fr
     }
     .auth-panel{
-        flex:1
+        flex:1;
+        padding:32px
+    }
+    .page-header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:14px
     }
 }
 
-@media(max-width:700px){
+@media(max-width:768px){
     .sidebar{
-        display:none
+        position:fixed;
+        left:-260px;
+        top:58px;
+        height:calc(100vh - 58px);
+        width:260px;
+        z-index:1000;
+        transition:left 0.3s var(--ease);
+        background:var(--ink2);
+        box-shadow:10px 0 30px rgba(0,0,0,0.5);
+        display:flex !important;
+        flex-direction:column
+    }
+    .sidebar.show-sidebar{
+        left:0
+    }
+    .tb-menu-toggle{
+        display:block
     }
     .auth-visual{
         display:none
+    }
+    .content{
+        padding:18px
+    }
+    .stat-grid{
+        grid-template-columns:1fr;
+        gap:12px
+    }
+    .profile-hero{
+        flex-direction:column;
+        text-align:center;
+        gap:16px;
+        padding:24px
+    }
+    .profile-big-av{
+        margin:0 auto
+    }
+}
+
+@media(max-width:480px){
+    .topbar{
+        padding:0 12px;
+        gap:8px
+    }
+    .tb-clock, .tb-user-name, .tb-user-role, .tb-page-title, .topbar-sep{
+        display:none
+    }
+    .tb-logout{
+        padding:6px;
+        font-size:11px
+    }
+    .tb-name{
+        display:none
+    }
+    .tb-mark{
+        width:28px;
+        height:28px;
+        font-size:13px
+    }
+    .ph-left h1{
+        font-size:22px
+    }
+    .field-row{
+        grid-template-columns:1fr;
+        gap:0
+    }
+    .modal{
+        padding:20px;
+        border-radius:12px
+    }
+    .modal-head{
+        flex-direction:column;
+        gap:12px
+    }
+    .modal-close{
+        position:absolute;
+        right:20px;
+        top:20px;
+        margin:0
+    }
+    .stat-num{
+        font-size:26px
+    }
+    .auth-panel{
+        padding:20px
+    }
+    .form-heading{
+        font-size:22px
+    }
+    table{
+        font-size:11px
+    }
+    th, td{
+        padding:8px 10px
+    }
+    .td-actions{
+        flex-direction:column;
+        gap:6px
+    }
+    .btn{
+        padding:10px 16px;
+        font-size:13px
+    }
+    .btn-xs{
+        padding:6px 10px;
+        font-size:11px
+    }
+    .card{
+        padding:16px;
+        border-radius:12px
     }
 }
